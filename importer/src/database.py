@@ -106,6 +106,11 @@ UPSERT_QUALITY_CONTROL_QUERY = """
         notes = EXCLUDED.notes
 """
 
+UPSERT_QUERIES = {
+    Dataset.SITES: UPSERT_SITE_QUERY,
+    Dataset.PRODUCTS: UPSERT_PRODUCT_QUERY,
+}
+
 INSERT_LOG_QUERY = """
     INSERT INTO analytics.import_logs (
         import_reference, source_system, source_file, import_status,
@@ -159,11 +164,7 @@ class ImportRepository:
             return self._upsert_production_orders(records)
         if dataset == Dataset.QUALITY_CONTROLS:
             return self._upsert_quality_controls(records)
-        query = (
-            UPSERT_SITE_QUERY
-            if dataset == Dataset.SITES
-            else UPSERT_PRODUCT_QUERY
-        )
+        query = UPSERT_QUERIES[dataset]
         self._executemany(query, records)
         return []
 

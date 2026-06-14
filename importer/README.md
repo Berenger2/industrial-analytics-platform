@@ -95,16 +95,3 @@ python -m unittest discover -s tests -v
 ```
 
 Les logs sont structurés en JSON sur la sortie standard.
-
-## Migration du modèle legacy
-
-Une nouvelle base ne crée plus `analytics.production_metrics`. Sur un volume
-PostgreSQL déjà initialisé, les scripts d'initialisation ne sont pas rejoués
-automatiquement. La migration idempotente doit être exécutée une fois :
-
-```bash
-docker compose exec postgres psql \
-  -U "${POSTGRES_USER:-industrial}" \
-  -d "${POSTGRES_DB:-industrial_analytics}" \
-  -f /docker-entrypoint-initdb.d/005_remove_legacy_production_metrics.sql
-```
