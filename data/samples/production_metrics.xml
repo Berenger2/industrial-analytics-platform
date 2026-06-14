@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<production_metrics>
+  <record>
+    <machine_id>OVEN-003</machine_id>
+    <site>Stuttgart</site>
+    <metric_name>temperature</metric_name>
+    <metric_value>182.6</metric_value>
+    <unit>celsius</unit>
+    <recorded_at>2026-01-15T08:00:00Z</recorded_at>
+  </record>
+  <record>
+    <machine_id>OVEN-003</machine_id>
+    <site>Stuttgart</site>
+    <metric_name>power</metric_name>
+    <metric_value>46.2</metric_value>
+    <unit>kW</unit>
+    <recorded_at>2026-01-15T08:00:00Z</recorded_at>
+  </record>
+</production_metrics>

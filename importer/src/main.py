@@ -1,56 +1,66 @@
-import csv
 import logging
-import os
-from pathlib import Path
+import sys
 
 import psycopg
 
+from .config import Config, ConfigurationError
+from .database import ImportRepository
+from .logging_config import configure_logging
+from .service import ImportService
+
 LOGGER = logging.getLogger(__name__)
 
-INSERT_QUERY = """
-    INSERT INTO analytics.production_metrics (
-        machine_id,
-        site,
-        metric_name,
-        metric_value,
-        unit,
-        recorded_at
-    )
-    VALUES (
-        %(machine_id)s,
-        %(site)s,
-        %(metric_name)s,
-        %(metric_value)s,
-        %(unit)s,
-        %(recorded_at)s
-    )
-    ON CONFLICT (machine_id, metric_name, recorded_at) DO NOTHING
-"""
 
+def run() -> int:
+    try:
+        config = Config.from_env()
+    except ConfigurationError as error:
+        configure_logging("INFO")
+        LOGGER.error(
+            "Invalid importer configuration",
+            extra={"event": "configuration_error", "error": str(error)},
+        )
+        return 2
 
-def read_rows(sample_file: Path) -> list[dict[str, str]]:
-    with sample_file.open(encoding="utf-8", newline="") as source:
-        return list(csv.DictReader(source))
+    configure_logging(config.log_level)
+
+    try:
+        with psycopg.connect(
+            config.database_url,
+            connect_timeout=config.database_connect_timeout_seconds,
+            application_name=config.database_application_name,
+        ) as connection:
+            service = ImportService(config, ImportRepository(connection))
+            summary = service.run()
+    except psycopg.Error:
+        LOGGER.exception(
+            "Database connection failed",
+            extra={"event": "database_connection_failed"},
+        )
+        return 1
+    except Exception:
+        LOGGER.exception(
+            "Unexpected importer failure",
+            extra={"event": "importer_failed"},
+        )
+        return 1
+
+    LOGGER.info(
+        "Import run completed",
+        extra={
+            "event": "import_run_completed",
+            "files_total": summary.files_total,
+            "files_failed": summary.files_failed,
+            "rows_received": summary.rows_received,
+            "rows_processed": summary.rows_processed,
+            "rows_rejected": summary.rows_rejected,
+        },
+    )
+    return 1 if summary.files_failed else 0
 
 
 def main() -> None:
-    logging.basicConfig(
-        level=os.getenv("LOG_LEVEL", "INFO"),
-        format="%(asctime)s %(levelname)s %(message)s",
-    )
-
-    database_url = os.environ["DATABASE_URL"]
-    sample_file = Path(
-        os.getenv("SAMPLE_FILE", "/data/samples/production_metrics.csv")
-    )
-
-    rows = read_rows(sample_file)
-    with psycopg.connect(database_url) as connection:
-        with connection.cursor() as cursor:
-            cursor.executemany(INSERT_QUERY, rows)
-        connection.commit()
-
-    LOGGER.info("Import terminé : %s ligne(s) analysée(s).", len(rows))
+    sys.exit(run())
 
 
 if __name__ == "__main__":
