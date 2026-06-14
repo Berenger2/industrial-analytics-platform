@@ -1,0 +1,38 @@
+# Environment variables and local secrets
+.env
+.env.*
+!.env.example
+
+# Operating systems and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# JavaScript
+**/node_modules/
+**/dist/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Tooling and reports
+.coverage
+coverage/
+htmlcov/
+*.log
+.cache/
+
+# Local data and backups
+*.bak
+*.tmp
+*.sql.gz
+
+README.md

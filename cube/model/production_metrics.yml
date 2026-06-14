@@ -1,0 +1,47 @@
+cubes:
+  - name: production_metrics
+    title: Production Metrics
+    description: Sample measurements imported from industrial equipment.
+    sql_table: analytics.production_metrics
+
+    measures:
+      - name: count
+        type: count
+
+      - name: average_value
+        sql: metric_value
+        type: avg
+
+      - name: minimum_value
+        sql: metric_value
+        type: min
+
+      - name: maximum_value
+        sql: metric_value
+        type: max
+
+    dimensions:
+      - name: id
+        sql: id
+        type: number
+        primary_key: true
+
+      - name: machine_id
+        sql: machine_id
+        type: string
+
+      - name: site
+        sql: site
+        type: string
+
+      - name: metric_name
+        sql: metric_name
+        type: string
+
+      - name: unit
+        sql: unit
+        type: string
+
+      - name: recorded_at
+        sql: recorded_at
+        type: time
