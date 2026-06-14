@@ -17,21 +17,9 @@ class SourceFormatError(ValueError):
     """Raised when a source file cannot be parsed."""
 
 
-def discover_files(
-    input_directory: Path,
-    csv_pattern: str,
-    xml_pattern: str,
-) -> list[Path]:
-    files = {
-        *input_directory.glob(csv_pattern),
-        *input_directory.glob(xml_pattern),
-    }
-    return sorted(path for path in files if path.is_file())
-
-
 def parse_file(
     path: Path,
-    xml_record_tag: str,
+    xml_record_tag: str | None,
     csv_delimiter: str,
 ) -> Iterator[SourceRow]:
     suffix = path.suffix.lower()
@@ -39,6 +27,8 @@ def parse_file(
         yield from parse_csv(path, csv_delimiter)
         return
     if suffix == ".xml":
+        if not xml_record_tag:
+            raise SourceFormatError("XML record tag is not configured")
         yield from parse_xml(path, xml_record_tag)
         return
     raise UnsupportedFileError(f"Unsupported file extension: {path.suffix}")

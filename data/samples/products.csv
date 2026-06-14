@@ -1,0 +1,4 @@
+product_code,product_name,product_family,unit_of_measure,standard_cycle_time_seconds,target_scrap_rate,is_active
+DRV-X100,X100 Variable Speed Drive,Industrial Drives,unit,84,1.50,true
+SNS-T450,T450 Temperature Sensor,Industrial Sensors,unit,42,0.80,true
+CTL-M800,M800 Motion Controller,Control Systems,unit,135,2.00,true

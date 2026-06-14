@@ -1,0 +1,4 @@
+site_code,site_name,country_code,city,timezone,status,commissioned_on
+FR-LYO,Lyon Advanced Manufacturing,FR,Lyon,Europe/Paris,active,2014-09-15
+DE-STU,Stuttgart Precision Plant,DE,Stuttgart,Europe/Berlin,active,2011-03-21
+ES-BIL,Bilbao Assembly Center,ES,Bilbao,Europe/Madrid,maintenance,2018-06-04

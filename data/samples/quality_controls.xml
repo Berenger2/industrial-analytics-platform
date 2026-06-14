@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quality_controls>
+  <quality_control>
+    <control_reference>QC-LYO-2026-0505-01</control_reference>
+    <order_number>PO-2026-0501-LYO</order_number>
+    <controlled_at>2026-05-05T10:30:00+02:00</controlled_at>
+    <sample_size>80</sample_size>
+    <passed_quantity>79</passed_quantity>
+    <failed_quantity>1</failed_quantity>
+    <result>passed</result>
+    <defect_category>Surface finish</defect_category>
+    <inspector_name>Claire Bernard</inspector_name>
+    <notes>One cosmetic defect; functional tests passed.</notes>
+  </quality_control>
+  <quality_control>
+    <control_reference>QC-STU-2026-0519-02</control_reference>
+    <order_number>PO-2026-0518-STU</order_number>
+    <controlled_at>2026-05-19T15:15:00+02:00</controlled_at>
+    <sample_size>50</sample_size>
+    <passed_quantity>47</passed_quantity>
+    <failed_quantity>3</failed_quantity>
+    <result>warning</result>
+    <defect_category>Connector alignment</defect_category>
+    <inspector_name>Jonas Keller</inspector_name>
+    <notes>Additional end-of-line inspection requested.</notes>
+  </quality_control>
+  <quality_control>
+    <control_reference>QC-BIL-2026-0609-01</control_reference>
+    <order_number>PO-2026-0608-BIL</order_number>
+    <controlled_at>2026-06-09T11:45:00+02:00</controlled_at>
+    <sample_size>120</sample_size>
+    <passed_quantity>120</passed_quantity>
+    <failed_quantity>0</failed_quantity>
+    <result>passed</result>
+    <defect_category></defect_category>
+    <inspector_name>Marta Etxeberria</inspector_name>
+    <notes>Dimensions and calibration within specification.</notes>
+  </quality_control>
+</quality_controls>
