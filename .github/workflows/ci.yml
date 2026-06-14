@@ -6,13 +6,16 @@ on:
       - main
       - develop
   pull_request:
+    branches:
+      - main
+      - develop
 
 permissions:
   contents: read
 
 jobs:
-  validate:
-    name: Validate project
+  importer:
+    name: Importer tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -20,23 +23,31 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Validate Docker Compose configuration
-        run: docker compose --env-file .env.example config --quiet
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: importer/requirements.txt
 
-      - name: Install importer dependencies
+      - name: Install dependencies
         run: python -m pip install -r importer/requirements.txt
 
       - name: Validate Python sources
         run: python -m compileall -q importer/src importer/tests
 
-      - name: Run importer tests
+      - name: Run tests
         working-directory: importer
         run: python -m unittest discover -s tests -v
+
+  frontend:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -45,10 +56,31 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install frontend dependencies
+      - name: Install dependencies
         working-directory: frontend
         run: npm ci
 
       - name: Build frontend
         working-directory: frontend
         run: npm run build
+
+  containers:
+    name: Container validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs:
+      - importer
+      - frontend
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose configuration
+        run: docker compose --env-file .env.example config --quiet
+
+      - name: Build development services
+        run: docker compose --env-file .env.example build
+
+      - name: Build production frontend
+        run: docker build --target production --tag frontend:ci frontend

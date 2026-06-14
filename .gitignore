@@ -34,3 +34,6 @@ htmlcov/
 *.bak
 *.tmp
 *.sql.gz
+
+# Local documentation drafts
+README.md
