@@ -8,6 +8,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src ./src
+RUN groupadd --system importer \
+    && useradd --system --gid importer --home-dir /app importer
+
+COPY --chown=importer:importer src ./src
+
+USER importer
 
 CMD ["python", "-m", "src.main"]

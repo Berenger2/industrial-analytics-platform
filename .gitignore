@@ -34,5 +34,3 @@ htmlcov/
 *.bak
 *.tmp
 *.sql.gz
-
-README.md
