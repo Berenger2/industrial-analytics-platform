@@ -1,0 +1,36 @@
+cubes:
+  - name: Products
+    title: Products
+    description: Product reference data used by industrial KPI queries.
+    sql_table: analytics.dim_products
+
+    dimensions:
+      - name: productId
+        sql: product_id
+        type: number
+        primary_key: true
+
+      - name: product
+        sql: product_name
+        type: string
+        title: Product
+
+      - name: productCode
+        sql: product_code
+        type: string
+
+      - name: productFamily
+        sql: product_family
+        type: string
+
+      - name: unitOfMeasure
+        sql: unit_of_measure
+        type: string
+
+      - name: isActive
+        sql: is_active
+        type: boolean
+
+      - name: createdAt
+        sql: created_at
+        type: time

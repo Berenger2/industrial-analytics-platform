@@ -1,0 +1,66 @@
+cubes:
+  - name: QualityControls
+    title: Quality Controls
+    description: Quality inspection outcomes linked to production orders.
+    sql_table: analytics.fact_quality_controls
+
+    joins:
+      - name: ProductionOrders
+        relationship: many_to_one
+        sql: "{CUBE}.production_order_id = {ProductionOrders}.production_order_id"
+
+    measures:
+      - name: qualityControlCount
+        type: count
+        title: Quality Control Count
+
+      - name: nonConformityCount
+        type: count
+        title: Non-Conformity Count
+        filters:
+          - sql: "{CUBE}.failed_quantity > 0"
+
+    dimensions:
+      - name: qualityControlId
+        sql: quality_control_id
+        type: number
+        primary_key: true
+
+      - name: controlReference
+        sql: control_reference
+        type: string
+
+      - name: status
+        sql: result
+        type: string
+        title: Status
+
+      - name: month
+        sql: controlled_at
+        type: time
+        title: Quality Control Month
+
+      - name: controlledAt
+        sql: controlled_at
+        type: time
+
+      - name: defectCategory
+        sql: defect_category
+        type: string
+
+      - name: inspectorName
+        sql: inspector_name
+        type: string
+
+    pre_aggregations:
+      - name: qualityBySiteAndMonth
+        type: rollup
+        measures:
+          - CUBE.qualityControlCount
+          - CUBE.nonConformityCount
+        dimensions:
+          - Sites.site
+        time_dimension: CUBE.month
+        granularity: month
+        refresh_key:
+          every: 1 hour

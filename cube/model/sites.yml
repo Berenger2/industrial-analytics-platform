@@ -1,0 +1,36 @@
+cubes:
+  - name: Sites
+    title: Sites
+    description: Manufacturing sites monitored by the platform.
+    sql_table: analytics.dim_sites
+
+    dimensions:
+      - name: siteId
+        sql: site_id
+        type: number
+        primary_key: true
+
+      - name: site
+        sql: site_name
+        type: string
+        title: Site
+
+      - name: siteCode
+        sql: site_code
+        type: string
+
+      - name: countryCode
+        sql: country_code
+        type: string
+
+      - name: city
+        sql: city
+        type: string
+
+      - name: status
+        sql: status
+        type: string
+
+      - name: createdAt
+        sql: created_at
+        type: time

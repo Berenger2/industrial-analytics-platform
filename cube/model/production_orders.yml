@@ -1,0 +1,112 @@
+cubes:
+  - name: ProductionOrders
+    title: Production Orders
+    description: Production execution facts at manufacturing order level.
+    sql_table: analytics.fact_production_orders
+
+    joins:
+      - name: Sites
+        relationship: many_to_one
+        sql: "{CUBE}.site_id = {Sites}.site_id"
+
+      - name: Products
+        relationship: many_to_one
+        sql: "{CUBE}.product_id = {Products}.product_id"
+
+    measures:
+      - name: orderCount
+        type: count
+        title: Order Count
+
+      - name: plannedQuantity
+        sql: planned_quantity
+        type: sum
+        title: Planned Quantity
+
+      - name: producedQuantity
+        sql: produced_quantity
+        type: sum
+        title: Produced Quantity
+
+      - name: scrapQuantity
+        sql: rejected_quantity
+        type: sum
+        title: Scrap Quantity
+
+      - name: scrapRate
+        sql: "100.0 * {scrapQuantity} / NULLIF({producedQuantity}, 0)"
+        type: number
+        format: percent
+        title: Scrap Rate
+        description: Rejected quantity as a percentage of produced quantity.
+
+      - name: delayedOrders
+        type: count
+        title: Delayed Orders
+        filters:
+          - sql: |
+              (
+                {CUBE}.actual_end_at > {CUBE}.planned_end_at
+                OR (
+                  {CUBE}.actual_end_at IS NULL
+                  AND {CUBE}.order_status NOT IN ('completed', 'cancelled')
+                  AND {CUBE}.planned_end_at < NOW()
+                )
+              )
+
+    dimensions:
+      - name: productionOrderId
+        sql: production_order_id
+        type: number
+        primary_key: true
+
+      - name: orderNumber
+        sql: order_number
+        type: string
+        title: Order Number
+
+      - name: status
+        sql: order_status
+        type: string
+        title: Status
+
+      - name: lineCode
+        sql: line_code
+        type: string
+
+      - name: month
+        sql: planned_start_at
+        type: time
+        title: Production Month
+
+      - name: plannedStartAt
+        sql: planned_start_at
+        type: time
+
+      - name: plannedEndAt
+        sql: planned_end_at
+        type: time
+
+      - name: actualStartAt
+        sql: actual_start_at
+        type: time
+
+      - name: actualEndAt
+        sql: actual_end_at
+        type: time
+
+    pre_aggregations:
+      - name: productionBySiteAndMonth
+        type: rollup
+        measures:
+          - CUBE.orderCount
+          - CUBE.plannedQuantity
+          - CUBE.producedQuantity
+          - CUBE.scrapQuantity
+          - CUBE.delayedOrders
+        dimensions:
+          - Sites.site
+        time_dimension: CUBE.month
+        granularity: month
+        refresh_key:
+          every: 1 hour
